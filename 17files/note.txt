@@ -1,0 +1,2 @@
+welcome to our course, we will teach you everything about golang 
+thank you!
