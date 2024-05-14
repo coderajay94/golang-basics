@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -15,7 +16,28 @@ func main() {
 	fmt.Println("calling apis via get/post methods...")
 
 	//CallGetService(geturl)
-	CallPostService()
+	//CallPostService()
+	CallPostFormService()
+}
+
+func CallPostFormService() {
+	formurl := "http://localhost:8000/postform"
+
+	data := url.Values{}
+	data.Add("username", "ajakumar")
+	data.Add("password", "1232fddfd")
+
+	resp, err := http.PostForm(formurl, data)
+	//fmt.Println("printing response for form post:", resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	defer resp.Body.Close()
+
+	r, _ := ioutil.ReadAll(resp.Body)
+
+	fmt.Println("resp from post form service", string(r))
 }
 
 func CallPostService() {
