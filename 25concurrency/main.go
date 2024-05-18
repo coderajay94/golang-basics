@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 )
+
+var signals = []string{"test"}
 
 var websites = []string{
 	"https://www.google.com",
@@ -16,6 +17,7 @@ var websites = []string{
 }
 
 var wg sync.WaitGroup //these are pointers
+var mutex sync.Mutex
 
 func main() {
 	//fmt.Println("hello to goroutine")
@@ -28,14 +30,22 @@ func main() {
 	}
 
 	wg.Wait()
+	fmt.Println(signals)
 }
 
 func getStatusCode(website string) {
 	defer wg.Done()
-	resp, err := http.Get(website)
-	if err != nil {
-		fmt.Printf("error occured while getting status code %v\n", website)
-		log.Fatal(err)
+	resp, _ := http.Get(website)
+	if resp.StatusCode != 200 {
+
+		//as many other threads can also try to access signals can cause problems
+		// so lock and update and others can wait till operation is completed
+		mutex.Lock()
+		signals = append(signals, website)
+		mutex.Unlock()
+		fmt.Printf("Status code: %v for website is %v \n", resp.StatusCode, website)
+		//fmt.Printf("error occured while getting status code %v\n", website)
+		//log.Fatal(err)
 	} else {
 		fmt.Printf("Status code: %v for website is %v \n", resp.StatusCode, website)
 	}
