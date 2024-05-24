@@ -83,6 +83,7 @@ func main() {
 	http.Handle("/uppercase", upperCaseHandler)
 	http.Handle("/count", countHandler)
 
+	//starting the server
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
